@@ -54,6 +54,7 @@ public class UsrArticleController {
 			
 		}
 		
+				
 		@RequestMapping("usr/article/doAdd")
 		@ResponseBody
 		//브라우져 창에 아래와 같이 입력 하면 됨
@@ -71,6 +72,76 @@ public class UsrArticleController {
 			return rs;
 			
 		}
-	
+		/**
+		 * 아래 메소드는 직접 당해 메소드에서 게시물을 삭제
+		@RequestMapping("usr/article/doDelete")
+		@ResponseBody
+		//★해당 계시글이 지워져도 다음 글의 번호는 다음 번호를 부여받아야지 지워진 번호를 이어받으면 않됨
+		//게시물을 지우는 메소드
+		public Map<String, Object> doDelete(int id){
+			
+			articles.remove(id - 1);
+			
+			Map<String, Object> rs = new HashMap<>();
+			
+			rs.put("Result Code", "S-1");
+			rs.put("Msg", "성공");
+			rs.put("ID", articlesLastId);
+			
+			return rs;
+			
+		}
+		**/
+
+		
+		//아래 메소드는 지우는 액션을 실제로 하는 메소드를 만들어 게시물 삭제
+		@RequestMapping("usr/article/doDelete")
+		@ResponseBody
+		//★해당 계시글이 지워져도 다음 글의 번호는 다음 번호를 부여받아야지 지워진 번호를 이어받으면 않됨
+		//게시물을 지우는 메소드
+		//http://localhost:8021/usr/article/doDelete?id=1
+		public Map<String, Object> doDelete(int id){
+			
+			boolean deleteArticleRs = deleteArticle(id);
+			
+			Map<String, Object> rs = new HashMap<>();
+			
+			if(deleteArticleRs == true) {
+				
+				rs.put("Result Code", "S-1");
+				rs.put("Msg", "성공");
+				
+			}
+			
+			if(deleteArticleRs == false) {
+				
+				rs.put("Result Code", "F-1");
+				rs.put("Msg", "게시물이 없습니다");
+				
+				
+			}
+			
+			rs.put("ID", id);
+			
+			return rs;
+			
+		}
+		
+		private boolean deleteArticle(int id) {
+
+			for(Article article : articles) {
+				
+				if(article.getId() == id) {
+					
+					articles.remove(article);
+					
+					return true;
+					
+				}
+				
+			}
+			
+			return false;
+		}
 
 }
