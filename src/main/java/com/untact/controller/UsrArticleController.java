@@ -1,7 +1,9 @@
 package com.untact.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,14 +17,17 @@ import com.untact.dto.Article;
 @Controller
 public class UsrArticleController {
 	
+	private int articlesLastId;
 	private List<Article> articles;
 	
 	public UsrArticleController() {
+		
+		articlesLastId = 0;
 	
 		articles = new ArrayList<>();
 		
-		articles.add(new Article(1, "2020-12-12", "제목1", "내용1"));
-		articles.add(new Article(2, "2020-12-12", "제목2", "내용2"));
+		articles.add(new Article(++articlesLastId, "2020-12-12", "제목1", "내용1"));
+		articles.add(new Article(++articlesLastId, "2020-12-12", "제목2", "내용2"));
 		
 	}
 	
@@ -46,6 +51,24 @@ public class UsrArticleController {
 			
 			//전체 리스트가 나오도록 해줌
 			return articles;
+			
+		}
+		
+		@RequestMapping("usr/article/doAdd")
+		@ResponseBody
+		//브라우져 창에 아래와 같이 입력 하면 됨
+		//http://localhost:8021/usr/article/doAdd?regDate=20210629&title=제목3&body=내용3
+		public Map<String, Object> doAdd(String regDate, String title, String body){
+			
+			articles.add(new Article(++articlesLastId, "regDate", "title", "body"));
+			
+			Map<String, Object> rs = new HashMap<>();
+			
+			rs.put("Result Code", "S-1");
+			rs.put("Msg", "성공");
+			rs.put("ID", articlesLastId);
+			
+			return rs;
 			
 		}
 	
