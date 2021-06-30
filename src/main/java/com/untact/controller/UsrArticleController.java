@@ -21,14 +21,19 @@ public class UsrArticleController {
 	private int articlesLastId;
 	private List<Article> articles;
 	
+	//현재 날짜를 받아오는 메소드 호출
+	String regDate = Util.getNowDateStr();
+	
+	
 	public UsrArticleController() {
 		
 		articlesLastId = 0;
+		String updateDate = regDate;
 	
 		articles = new ArrayList<>();
 		
-		articles.add(new Article(++articlesLastId, "2020-12-12", "제목1", "내용1"));
-		articles.add(new Article(++articlesLastId, "2020-12-12", "제목2", "내용2"));
+		articles.add(new Article(++articlesLastId, regDate, updateDate, "제목1", "내용1"));
+		articles.add(new Article(++articlesLastId, regDate, updateDate, "제목2", "내용2"));
 		
 	}
 	
@@ -62,10 +67,9 @@ public class UsrArticleController {
 		//http://localhost:8021/usr/article/doAdd?title=제목3&body=내용3
 		public Map<String, Object> doAdd(String title, String body){
 			
-			//현재 날짜를 받아오는 메소드 호출
-			String regDate = Util.getNowDateStr();
+			String updateDate = regDate;
 			
-			articles.add(new Article(++articlesLastId, regDate, title, body));
+			articles.add(new Article(++articlesLastId, regDate, updateDate, title, body));
 			
 			Map<String, Object> rs = new HashMap<>();
 			
@@ -180,6 +184,9 @@ public class UsrArticleController {
 				
 			} else {
 				
+				//setUpdateDate 메소드의 파라미터로 regDate를 넣으면 처음 생성할 때 시간이 입력된다.
+				//별개 객체를 생성하는 별도 Util.getNowDateStr() 메소드를 매개변수로 넣어줘야함.
+				selArticle.setUpdateDate(Util.getNowDateStr());
 				selArticle.setTitle(title);
 				selArticle.setBody(body);
 				
