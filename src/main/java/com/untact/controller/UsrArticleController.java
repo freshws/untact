@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.untact.Util.Util;
 import com.untact.dto.Article;
 
 
@@ -58,10 +59,13 @@ public class UsrArticleController {
 		@RequestMapping("usr/article/doAdd")
 		@ResponseBody
 		//브라우져 창에 아래와 같이 입력 하면 됨
-		//http://localhost:8021/usr/article/doAdd?regDate=20210629&title=제목3&body=내용3
-		public Map<String, Object> doAdd(String regDate, String title, String body){
+		//http://localhost:8021/usr/article/doAdd?title=제목3&body=내용3
+		public Map<String, Object> doAdd(String title, String body){
 			
-			articles.add(new Article(++articlesLastId, "regDate", "title", "body"));
+			//현재 날짜를 받아오는 메소드 호출
+			String regDate = Util.getNowDateStr();
+			
+			articles.add(new Article(++articlesLastId, regDate, title, body));
 			
 			Map<String, Object> rs = new HashMap<>();
 			
@@ -72,6 +76,8 @@ public class UsrArticleController {
 			return rs;
 			
 		}
+
+
 		/**
 		 * 아래 메소드는 직접 당해 메소드에서 게시물을 삭제
 		@RequestMapping("usr/article/doDelete")
