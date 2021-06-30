@@ -143,5 +143,50 @@ public class UsrArticleController {
 			
 			return false;
 		}
+		
+		@RequestMapping("usr/article/doModify")
+		@ResponseBody
+		//브라우져 창에 아래와 같이 입력 하면 됨
+		//http://localhost:8021/usr/article/doModify?id=1&title=제목3&body=내용3
+		public Map<String, Object> doModify(int id, String title, String body){
+			
+			Article selArticle = null;
+			
+			for(Article article : articles) {
+				
+				if (article.getId() == id) {
+					
+					selArticle = article;
+					
+					break;
+					
+				}
+				
+				
+			}
+			
+			Map<String, Object> rs = new HashMap<>();
+			
+			if (selArticle == null) {
+				
+				rs.put("Result Code", "F-1");
+				rs.put("Msg", String.format("%d번 게시물은 없습니다.", id));
+				
+			} else {
+				
+				selArticle.setTitle(title);
+				selArticle.setBody(body);
+				
+				rs.put("Result Code", "S-1");
+				rs.put("Msg", String.format("%d번 게시물이 수정되었습니다.", id));
+				
+			}
+			
+			
+			rs.put("ID", id);
+			
+			return rs;
+			
+		}
 
 }
