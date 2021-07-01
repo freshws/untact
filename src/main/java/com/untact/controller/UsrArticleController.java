@@ -1,7 +1,6 @@
 package com.untact.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.untact.Util.Util;
 import com.untact.dto.Article;
+import com.untact.dto.ResultData;
 
 
 //@Controller는 초기 Project 생성 시 Spring Web을 체크 해야 사용가능
@@ -65,7 +65,7 @@ public class UsrArticleController {
 		@ResponseBody
 		//브라우져 창에 아래와 같이 입력 하면 됨
 		//http://localhost:8021/usr/article/doAdd?title=제목3&body=내용3
-		public Map<String, Object> doAdd(String title, String body){
+		public ResultData doAdd(String title, String body){
 			
 			String updateDate = regDate;
 			
@@ -82,7 +82,8 @@ public class UsrArticleController {
 			rs.put("ID", articlesLastId);
 			 */
 			
-			return Util.mapOf("Result Code", "S-1", "Msg", "성공", "ID", articlesLastId);
+			//return Util.mapOf("Result Code", "S-1", "Msg", "성공", "ID", articlesLastId);
+			return new ResultData("S-1", "성공", "ID", articlesLastId);
 			
 		}
 
@@ -115,17 +116,19 @@ public class UsrArticleController {
 		//★해당 계시글이 지워져도 다음 글의 번호는 다음 번호를 부여받아야지 지워진 번호를 이어받으면 않됨
 		//게시물을 지우는 메소드
 		//http://localhost:8021/usr/article/doDelete?id=1
-		public Map<String, Object> doDelete(int id){
+		public ResultData doDelete(int id){
 			
 			boolean deleteArticleRs = deleteArticle(id);
 			
 			
 			if(deleteArticleRs == false) {
 				
-				return Util.mapOf("Result Code", "F-1","Msg", "게시물이 없습니다","ID", id );
+				//return Util.mapOf("Result Code", "F-1","Msg", "게시물이 없습니다","ID", id );
+				return new ResultData("F-1","게시물이 없습니다", "ID", id  );
 			}
 			
-			return Util.mapOf("Result Code", "S-1","Msg", "성공" ,"ID", id );
+			//return Util.mapOf("Result Code", "S-1","Msg", "성공" ,"ID", id );
+			return new ResultData("S-1", "성공" ,"ID", id );
 			
 		}
 		
@@ -150,7 +153,7 @@ public class UsrArticleController {
 		@ResponseBody
 		//브라우져 창에 아래와 같이 입력 하면 됨
 		//http://localhost:8021/usr/article/doModify?id=1&title=제목3&body=내용3
-		public Map<String, Object> doModify(int id, String title, String body){
+		public ResultData doModify(int id, String title, String body){
 			
 			Article selArticle = null;
 			
@@ -169,7 +172,8 @@ public class UsrArticleController {
 			
 			if (selArticle == null) {
 				
-				return Util.mapOf("Result Code", "F-1","Msg", String.format("%d번 게시물은 없습니다.", id),"ID", id);
+				//return Util.mapOf("Result Code", "F-1","Msg", String.format("%d번 게시물은 없습니다.", id),"ID", id);
+				return new ResultData("F-1", String.format("%d번 게시물은 없습니다.", id),"ID", id);
 				
 			} else {
 				
@@ -179,7 +183,9 @@ public class UsrArticleController {
 				selArticle.setTitle(title);
 				selArticle.setBody(body);
 				
-				return Util.mapOf("Result Code", "S-1","Msg", String.format("%d번 게시물이 수정되었습니다.", id) ,"ID", id);
+				//return Util.mapOf("Result Code", "S-1","Msg", String.format("%d번 게시물이 수정되었습니다.", id) ,"ID", id);
+				return new ResultData("S-1",String.format("%d번 게시물이 수정되었습니다.", id) ,"ID", id);
+						
 			}
 			
 		}
