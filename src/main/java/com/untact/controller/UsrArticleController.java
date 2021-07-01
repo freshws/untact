@@ -71,13 +71,18 @@ public class UsrArticleController {
 			
 			articles.add(new Article(++articlesLastId, regDate, updateDate, title, body));
 			
+			
+			
+			/**
+			 * mapOf 라는 메소드를 만들어서 아래 처럼 put으로 하나하나 만들어줄 필요 없다.			
 			Map<String, Object> rs = new HashMap<>();
 			
 			rs.put("Result Code", "S-1");
 			rs.put("Msg", "성공");
 			rs.put("ID", articlesLastId);
+			 */
 			
-			return rs;
+			return Util.mapOf("Result Code", "S-1", "Msg", "성공", "ID", articlesLastId);
 			
 		}
 
@@ -114,26 +119,13 @@ public class UsrArticleController {
 			
 			boolean deleteArticleRs = deleteArticle(id);
 			
-			Map<String, Object> rs = new HashMap<>();
-			
-			if(deleteArticleRs == true) {
-				
-				rs.put("Result Code", "S-1");
-				rs.put("Msg", "성공");
-				
-			}
 			
 			if(deleteArticleRs == false) {
 				
-				rs.put("Result Code", "F-1");
-				rs.put("Msg", "게시물이 없습니다");
-				
-				
+				return Util.mapOf("Result Code", "F-1","Msg", "게시물이 없습니다","ID", id );
 			}
 			
-			rs.put("ID", id);
-			
-			return rs;
+			return Util.mapOf("Result Code", "S-1","Msg", "성공" ,"ID", id );
 			
 		}
 		
@@ -175,12 +167,9 @@ public class UsrArticleController {
 				
 			}
 			
-			Map<String, Object> rs = new HashMap<>();
-			
 			if (selArticle == null) {
 				
-				rs.put("Result Code", "F-1");
-				rs.put("Msg", String.format("%d번 게시물은 없습니다.", id));
+				return Util.mapOf("Result Code", "F-1","Msg", String.format("%d번 게시물은 없습니다.", id),"ID", id);
 				
 			} else {
 				
@@ -190,15 +179,8 @@ public class UsrArticleController {
 				selArticle.setTitle(title);
 				selArticle.setBody(body);
 				
-				rs.put("Result Code", "S-1");
-				rs.put("Msg", String.format("%d번 게시물이 수정되었습니다.", id));
-				
+				return Util.mapOf("Result Code", "S-1","Msg", String.format("%d번 게시물이 수정되었습니다.", id) ,"ID", id);
 			}
-			
-			
-			rs.put("ID", id);
-			
-			return rs;
 			
 		}
 

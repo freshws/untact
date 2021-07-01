@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.untact.Util.Util;
 import com.untact.dto.Article;
 
 
@@ -19,7 +20,7 @@ public class UsrHomeController {
 	@ResponseBody
 	public Article showDetail(int id) {
 		
-		Article article = new Article(1, "2020-12-12", "제목1", "내용1");
+		Article article = new Article(1, Util.getNowDateStr(), Util.getNowDateStr(), "제목1", "내용1");
 		
 		return article;
 		
