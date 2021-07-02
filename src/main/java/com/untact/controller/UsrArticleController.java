@@ -1,193 +1,83 @@
 package com.untact.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.untact.Util.Util;
 import com.untact.dto.Article;
 import com.untact.dto.ResultData;
+import com.untact.service.ArticleService;
 
-
-//@Controller는 초기 Project 생성 시 Spring Web을 체크 해야 사용가능
-//@Controller는 브라우저로부터 통신을 받아 응답할 수 있다.
 @Controller
 public class UsrArticleController {
-	
-	private int articlesLastId;
-	private List<Article> articles;
-	
-	//현재 날짜를 받아오는 메소드 호출
-	String regDate = Util.getNowDateStr();
-	
-	
-	public UsrArticleController() {
-		
-		articlesLastId = 0;
-		String updateDate = regDate;
-	
-		articles = new ArrayList<>();
-		
-		articles.add(new Article(++articlesLastId, regDate, updateDate, "제목1", "내용1"));
-		articles.add(new Article(++articlesLastId, regDate, updateDate, "제목2", "내용2"));
-		
+
+	@Autowired
+	private ArticleService articleService;
+
+	@RequestMapping("/usr/article/detail")
+	@ResponseBody
+	public Article showDetail(int id) {
+
+		Article article = articleService.getArticle(id);
+
+		return article;
+
 	}
-	
 
-	//@RequestMapping은 "/usr/home/main" 요청과 showMain() 메소드를 매칭시켜주는 것
-		@RequestMapping("/usr/article/detail")
-		//@ResponseBody는 이 함수를 return한 값이 브라우저에 전달 된다는 것
-		@ResponseBody
-		public Article showDetail(int id) {
-			
-			return articles.get(id - 1);
-			
-		}
-		
+	@RequestMapping("/usr/article/list")
+	@ResponseBody
+	public List<Article> showList() {
 
-		//@RequestMapping은 "/usr/home/main" 요청과 showMain() 메소드를 매칭시켜주는 것
-		@RequestMapping("/usr/article/list")
-		//@ResponseBody는 이 함수를 return한 값이 브라우저에 전달 된다는 것
-		@ResponseBody
-		public List<Article> showList() {
-			
-			//전체 리스트가 나오도록 해줌
-			return articles;
-			
-		}
-		
-				
-		@RequestMapping("usr/article/doAdd")
-		@ResponseBody
-		//브라우져 창에 아래와 같이 입력 하면 됨
-		//http://localhost:8021/usr/article/doAdd?title=제목3&body=내용3
-		public ResultData doAdd(String title, String body){
-			
-			String updateDate = regDate;
-			
-			articles.add(new Article(++articlesLastId, regDate, updateDate, title, body));
-			
-			
-			
-			/**
-			 * mapOf 라는 메소드를 만들어서 아래 처럼 put으로 하나하나 만들어줄 필요 없다.			
-			Map<String, Object> rs = new HashMap<>();
-			
-			rs.put("Result Code", "S-1");
-			rs.put("Msg", "성공");
-			rs.put("ID", articlesLastId);
-			 */
-			
-			//return Util.mapOf("Result Code", "S-1", "Msg", "성공", "ID", articlesLastId);
-			return new ResultData("S-1", "성공", "ID", articlesLastId);
-			
+		return articleService.getArticles();
+
+	}
+
+	//아래 매소드의 매개변수 중 title와 body는 String 타입 즉 클래스 타입이다.
+	//만약 int 같은 원시 타입의 경우 초기에 값을 입력해주지 않으면 에러 발생
+	@RequestMapping("/usr/article/doAdd")
+	@ResponseBody
+	public ResultData doAdd(String title, String body) {
+
+		if (title == null) {
+			return new ResultData("F-1", "title을 입력해주세요.");
 		}
 
+		if (body == null) {
+			return new ResultData("F-1", "body를 입력해주세요.");
+		}
 
-		/**
-		 * 아래 메소드는 직접 당해 메소드에서 게시물을 삭제
-		@RequestMapping("usr/article/doDelete")
-		@ResponseBody
-		//★해당 계시글이 지워져도 다음 글의 번호는 다음 번호를 부여받아야지 지워진 번호를 이어받으면 않됨
-		//게시물을 지우는 메소드
-		public Map<String, Object> doDelete(int id){
-			
-			articles.remove(id - 1);
-			
-			Map<String, Object> rs = new HashMap<>();
-			
-			rs.put("Result Code", "S-1");
-			rs.put("Msg", "성공");
-			rs.put("ID", articlesLastId);
-			
-			return rs;
-			
-		}
-		**/
+		return articleService.add(title, body);
 
-		
-		//아래 메소드는 지우는 액션을 실제로 하는 메소드를 만들어 게시물 삭제
-		@RequestMapping("usr/article/doDelete")
-		@ResponseBody
-		//★해당 계시글이 지워져도 다음 글의 번호는 다음 번호를 부여받아야지 지워진 번호를 이어받으면 않됨
-		//게시물을 지우는 메소드
-		//http://localhost:8021/usr/article/doDelete?id=1
-		public ResultData doDelete(int id){
-			
-			boolean deleteArticleRs = deleteArticle(id);
-			
-			
-			if(deleteArticleRs == false) {
-				
-				//return Util.mapOf("Result Code", "F-1","Msg", "게시물이 없습니다","ID", id );
-				return new ResultData("F-1","게시물이 없습니다", "ID", id  );
-			}
-			
-			//return Util.mapOf("Result Code", "S-1","Msg", "성공" ,"ID", id );
-			return new ResultData("S-1", "성공" ,"ID", id );
-			
-		}
-		
-		private boolean deleteArticle(int id) {
+	}
 
-			for(Article article : articles) {
-				
-				if(article.getId() == id) {
-					
-					articles.remove(article);
-					
-					return true;
-					
-				}
-				
-			}
-			
-			return false;
+	@RequestMapping("/usr/article/doDelete")
+	@ResponseBody
+	public ResultData doDelete(int id) {
+
+		Article article = articleService.getArticle(id);
+
+		if (article == null) {
+			return new ResultData("F-1", "해당 게시물은 존재하지 않습니다.");
 		}
-		
-		@RequestMapping("usr/article/doModify")
-		@ResponseBody
-		//브라우져 창에 아래와 같이 입력 하면 됨
-		//http://localhost:8021/usr/article/doModify?id=1&title=제목3&body=내용3
-		public ResultData doModify(int id, String title, String body){
-			
-			Article selArticle = null;
-			
-			for(Article article : articles) {
-				
-				if (article.getId() == id) {
-					
-					selArticle = article;
-					
-					break;
-					
-				}
-				
-				
-			}
-			
-			if (selArticle == null) {
-				
-				//return Util.mapOf("Result Code", "F-1","Msg", String.format("%d번 게시물은 없습니다.", id),"ID", id);
-				return new ResultData("F-1", String.format("%d번 게시물은 없습니다.", id),"ID", id);
-				
-			} else {
-				
-				//setUpdateDate 메소드의 파라미터로 regDate를 넣으면 처음 생성할 때 시간이 입력된다.
-				//별개 객체를 생성하는 별도 Util.getNowDateStr() 메소드를 매개변수로 넣어줘야함.
-				selArticle.setUpdateDate(Util.getNowDateStr());
-				selArticle.setTitle(title);
-				selArticle.setBody(body);
-				
-				//return Util.mapOf("Result Code", "S-1","Msg", String.format("%d번 게시물이 수정되었습니다.", id) ,"ID", id);
-				return new ResultData("S-1",String.format("%d번 게시물이 수정되었습니다.", id) ,"ID", id);
-						
-			}
-			
+
+		return articleService.deleteArticle(id);
+	}
+
+	@RequestMapping("/usr/article/doModify")
+	@ResponseBody
+	public ResultData doModify(int id, String title, String body) {
+
+		Article article = articleService.getArticle(id);
+
+		if (article == null) {
+			return new ResultData("F-1", "해당 게시물은 존재하지 않습니다.");
 		}
+
+		return articleService.modify(id, title, body);
+
+	}
 
 }
