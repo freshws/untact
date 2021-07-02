@@ -34,8 +34,26 @@ public class ArticleService {
 		return null;
 	}
 
-	public List<Article> getArticles() {
-		return articles;
+	public List<Article> getArticles(String searchKeyword) {
+		
+		if(searchKeyword == null) {
+			
+			return articles;
+		}
+		
+		List<Article> filtered = new ArrayList<>();
+		
+		//contains는 매개변수로 들어온 키워드가 있는지 확인해서 True, False 리턴
+		for (Article article : articles) {
+			if(article.getTitle().contains(searchKeyword)) {
+				
+				filtered.add(article);
+			
+			}
+		}
+		
+		return filtered;
+		
 	}
 
 	public ResultData add(String title, String body) {
